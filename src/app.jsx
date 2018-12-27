@@ -39,6 +39,7 @@ export class App extends ReactiveComponent {
 		this.seedAccount = this.seed.map(s => s ? secretStore().accountFromPhrase(s) : undefined)
 		this.seedAccount.use()
 		this.runtime = new Bond;
+		this.participant = new Bond; 
 	}
 
 	readyRender() {
@@ -218,6 +219,41 @@ export class App extends ReactiveComponent {
 						call: calls.upgrade_key.upgrade(this.runtime)
 					}}
 				/>
+			</Segment>
+			<Divider hidden />
+			<Segment style={{margin: '1em'}} padded>
+				<Header as='h2'>
+					<Icon name='search' />
+					<Header.Content>
+						Ceremonies
+						<Header.Subheader>Register for key signing event</Header.Subheader>
+					</Header.Content>
+				</Header>
+				<div style={{paddingBottom: '1em'}}></div>
+				<div style={{paddingBottom: '1em'}}>
+					<div style={{fontSize: 'small'}}>player</div>
+					<SignerBond bond={this.participant}/>
+					<If condition={this.participant.ready()} then={<span>
+					<Label>Balance
+						<Label.Detail>
+						<Pretty value={runtime.balances.balance(this.participant)}/>
+						</Label.Detail>
+					</Label>
+					</span>}/>
+				</div>
+				<TransactButton
+					content="Register"
+					icon='game'
+					tx={{
+					sender: this.participant,
+					call: calls.ceremonies.register()
+					}}
+				/>
+				<Label>Total Issuance
+					<Label.Detail>
+					<Pretty value={runtime.balances.totalIssuance}/>
+					</Label.Detail>
+				</Label>
 			</Segment>
 		</div>);
 	}
